@@ -18,9 +18,9 @@ class HeadHunterAPI(API):
         :return: массив данных со списком вакансий по ключевому слову
         """
         params = {
-            'text': f'NAME:{title}',  # Текст фильтра.
+            'text': f'NAME:{title}',  # Текст фильтра для поиска
             'area': 1,  # Поиск осуществляется по вакансиям города Москва
-            'page': 0,  # Индекс страницы поиска на HH
+            'page': 0,  # Страница поиска на HH
             'per_page': 100  # Кол-во вакансий на 1 странице
         }
 
@@ -35,10 +35,10 @@ class SuperJobAPI(API):
     """
     Класс для получения вакансий с сайта superjob.ru
     """
-    __SUPERJOB_APP_ID = os.environ.get('SUPERJOB_APP_ID')
 
     def __init__(self):
         self.__url = 'https://api.superjob.ru/2.0/vacancies/'
+        self.__superjob_app_id = os.environ.get('SUPERJOB_API_KEY')
 
     def get_vacancy(self, title: str):
         """
@@ -46,7 +46,7 @@ class SuperJobAPI(API):
         :param title: ключевое слово для поиска вакансий
         :return: массив данных со списком вакансий по ключевому слову в названии вакансии
         """
-        headers = {"X-Api-App-Id": self.__SUPERJOB_APP_ID}
+        headers = {"X-Api-App-Id": self.__superjob_app_id}
 
         params = {
             'keyword': title,
