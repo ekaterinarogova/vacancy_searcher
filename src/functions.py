@@ -86,7 +86,7 @@ def get_user_vacancies(platforms: str, user_request: str, user_keywords: list):
     elif platforms == "2":
         vacancies = get_vacancies_sj(user_request)
     else:
-        return "Неверно заданные данные"
+        return "Неверно заданные параметры"
 
     json_file = FileHandlerJSON(user_request)
     json_file.add_vacancy(vacancies)

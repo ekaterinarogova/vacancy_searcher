@@ -137,9 +137,11 @@ class VacancySuperJob(Vacancy):
         :return: строка без лишних символов
         """
         symbols = ['\n', '</p>', '<p>', '</li>', '<li>', '<b>', '</b>', '<ul>', '<li>', '</li>',  '<br />', '</ul>']
-
-        for symb in symbols:
-            string = string.replace(symb, " ")
+        try:
+            for symb in symbols:
+                string = string.replace(symb, " ")
+        except AttributeError:
+            return 'не указано'
 
         return string
 
