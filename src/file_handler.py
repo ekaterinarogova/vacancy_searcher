@@ -1,35 +1,5 @@
 import json
-from abc import ABC, abstractmethod
-
-
-class FileHandler(ABC):
-    """
-    Абстрактный класс для работы с файлами
-    """
-
-    @abstractmethod
-    def add_vacancy(self, data: str) -> None:
-        """
-        Абстрактный метод для добавления вакансии в файл
-        :param data: инфо о вакансии
-        """
-        ...
-
-    @abstractmethod
-    def get_vacancy(self, job_title: str) -> None:
-        """
-        Абстрактный метод для получения данных о вакансии из файла
-        :param job_title: название о вакансии
-        """
-        ...
-
-    # @abstractmethod
-    # def delete_vacancy(self, data: str) -> None:
-    #     """
-    #     Абстрактный метод для удаления данных о вакансии из файла
-    #     :param data: инфо о вакансии
-    #     """
-    #     ...
+from src.abstract_classes import FileHandler
 
 
 class FileHandlerJSON(FileHandler):
@@ -41,9 +11,9 @@ class FileHandlerJSON(FileHandler):
         """
         Инициализатор класса. При инициализации получает название файла json
         c которым будет работать
-        :param filename: путь до файла
+        :param filename: название файла
         """
-        self.filename = f'{filename}.json'
+        self.filename = f"{filename}.json"
         self.create_file()
 
     def create_file(self) -> None:
@@ -52,41 +22,44 @@ class FileHandlerJSON(FileHandler):
         """
         json_data = []
         with open(self.filename, 'w', encoding='utf-8') as file:
-            file.write(json.dumps(json_data, indent=2))
+            file.write(json.dumps(json_data))
 
-    def add_vacancy(self, data: dict) -> None:
+    def add_vacancy(self, data: list) -> None:
         """
-        Абстрактный метод для добавления данных о вакансии в файл
+        Метод для добавления вакансий в файл
         :param data: инфо о вакансии
         """
         with open(self.filename, encoding='utf-8') as f:
             file_reader = json.load(f)
-            file_reader.append(data)
+            file_reader.extend(data)
         with open(self.filename, 'w', encoding='utf-8') as file:
-            json.dump(file_reader, file)
+            json.dump(file_reader, file, indent=4, ensure_ascii=False)
 
-    def get_vacancy(self, job_title) -> None:
+    def get_vacancy(self, keywords: list) -> list:
         """
-        Метод для получения данных о вакансии из файла
-        :param job_title: инфо о вакансии
+        Метод для получения списка вакансий по ключевому слову
+        :param keywords: ключевые слова для поиска вакансии
+        """
+
+        with open(self.filename, encoding='utf-8') as f:
+            file_reader = json.load(f)
+            vacancies = []
+            for i in file_reader:
+                for key in keywords:
+                    try:
+                        if key in i['Название'] or key in i['Описание'] or key in i['Требования']:
+                            vacancies.append(i)
+                    except TypeError:
+                        continue
+            return vacancies
+
+    def delete_vacancy(self, title: str) -> None:
+        """
+        Абстрактный метод для получения данных о вакансии из файла
+        :param title: название вакансии
         """
         with open(self.filename, encoding='utf-8') as f:
             file_reader = json.load(f)
-            for i in file_reader:
-                if i[job_title]:
-                    return i[job_title]
-
-    # def delete_vacancy(self,title: str, data: dict) -> None:
-    #     """
-    #     Абстрактный метод для получения данных о вакансии из файла
-    #     :param data: инфо о вакансии
-    #     :param title: название вакансии
-    #     """
-    #     with open(self.filename, encoding='utf-8') as f:
-    #         file_reader = json.load(f)
-    #         for i in file_reader:
-    #             if i[title]:
-    #                 del file_reader[title]
-    #     with open(self.filename, 'w', encoding='utf-8') as file:
-    #         json.dump(file_reader, file)
-    
+            file_reader_new = [i for i in file_reader if title in i['Название']]
+        with open(self.filename, 'w', encoding='utf-8') as file:
+            json.dump(file_reader_new, file, indent=4, ensure_ascii=False)

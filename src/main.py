@@ -1,11 +1,26 @@
-from src.request import GetVacancyHH
-from src.file_handler import FileHandlerJSON
-from src.vacancy import Vacancy
+from src.functions import get_top_vacancies, print_vacancies, get_user_vacancies
 
-user_vacancy = GetVacancyHH()
-job_title = 'анестезиолог'
-json_file = FileHandlerJSON(job_title)
-json_file.add_vacancy(user_vacancy.get_vacancy(job_title))
-Vacancy.instantiate_from_json(job_title, json_file.filename)
-print(Vacancy.all_vacancies)
 
+if __name__ == '__main__':
+    user_request = input("Введите название вакансии для поиска: ")
+
+    platforms = input("С какого сайта хотите получать данные?\n "
+                      "Введите:\n"
+                      "'1' - HeadHunter.ru\n"
+                      "'2' - Superjob.ru\n")
+    try:
+        top_n = int(input("Введите количество вакансий для вывода на экран:"))
+    except ValueError:
+        print("Неверно введенное значение. На экран будет выведено топ-5 вакансий ")
+        top_n = 5
+
+    user_keywords = input("Введите ключевые слова для вывода вакансий "
+                          "или нажмите 'enter' для пропуска этого пункта: ").split(',')
+
+    # получаем список вакансий с выбранной платформы по критериям пользователя
+    user_vac = get_user_vacancies(platforms, user_request, user_keywords)
+
+    # получаем список выбранного количества вакансий и выводим в удобном виде на экран
+    top_vac = get_top_vacancies(user_vac, top_n)
+    print("")
+    print_vacancies(top_vac)
